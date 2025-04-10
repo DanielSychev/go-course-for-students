@@ -9,4 +9,5 @@ func main() {
 	for i := 1; i <= 100; i++ {
 		fmt.Print(fizzbuzz.FizzBuzz(i), " ")
 	}
+	//some changes
 }
