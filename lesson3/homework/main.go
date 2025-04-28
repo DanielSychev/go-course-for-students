@@ -48,6 +48,7 @@ type Formatter struct {
 	up     bool
 	low    bool
 	trim   bool
+	//tbegin, tend   bool
 	//s_begin, s_end string
 }
 
@@ -61,6 +62,8 @@ func NewFormatter(writer io.Writer, conv string) (*Formatter, error) {
 			f.low = true
 		} else if arg == "trim_spaces" {
 			f.trim = true
+			//f.tbegin = true
+			//f.tend = true
 		}
 	}
 	if f.up && f.low {
@@ -75,6 +78,22 @@ func (out *Formatter) WriteChunk(s string) error {
 	} else if out.up {
 		s = strings.ToUpper(s)
 	}
+
+	//if out.trim && out.tbegin {
+	//	s = strings.TrimLeft(s, " ")
+	//	if s != "" {
+	//		out.tbegin = false
+	//	}
+	//}
+	//
+	//if out.trim && out.tend {
+	//	out.s_end += s
+	//}
+
+	if out.trim {
+		s = strings.TrimSpace(s)
+	}
+
 	_, err := io.WriteString(out.writer, s)
 	if err != nil {
 		return fmt.Errorf("cannot write input file: %w", err)
