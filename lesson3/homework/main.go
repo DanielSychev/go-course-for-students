@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"unicode"
 )
 
 type Options struct {
@@ -74,9 +75,18 @@ func NewFormatter(writer io.Writer, conv string) (*Formatter, error) {
 
 func (out *Formatter) WriteChunk(s string) error {
 	if out.low {
-		s = strings.ToLower(s)
+		//strings.ToLower(s)
+		runes := []rune(s)
+		for _, r := range runes {
+			r = unicode.ToLower(r)
+		}
+		s = string(runes)
 	} else if out.up {
-		s = strings.ToUpper(s)
+		runes := []rune(s)
+		for _, r := range runes {
+			r = unicode.ToUpper(r)
+		}
+		s = string(runes)
 	}
 
 	//if out.trim && out.tbegin {
