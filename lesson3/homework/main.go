@@ -77,14 +77,14 @@ func (out *Formatter) WriteChunk(s string) error {
 	if out.low {
 		//strings.ToLower(s)
 		runes := []rune(s)
-		for _, r := range runes {
-			r = unicode.ToLower(r)
+		for i := range runes {
+			runes[i] = unicode.ToLower(runes[i])
 		}
 		s = string(runes)
 	} else if out.up {
 		runes := []rune(s)
-		for _, r := range runes {
-			r = unicode.ToUpper(r)
+		for i := range runes {
+			runes[i] = unicode.ToUpper(runes[i])
 		}
 		s = string(runes)
 	}
