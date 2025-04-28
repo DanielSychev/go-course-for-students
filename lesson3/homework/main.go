@@ -32,16 +32,16 @@ func ParseFlags() (*Options, error) {
 	return &opts, nil
 }
 
-func ReadChunk(reader io.Reader, blockSize int) (string, error) {
+func ReadChunk(reader io.Reader, blockSize int) ([]byte, error) {
 	buf := make([]byte, blockSize)
 	n, err := reader.Read(buf)
 	if err != nil {
 		if err == io.EOF {
-			return "", err
+			return nil, err
 		}
-		return "", fmt.Errorf("cannot read input file: %w", err)
+		return nil, fmt.Errorf("cannot read input file: %w", err)
 	}
-	return string(buf[:n]), nil
+	return buf[:n], nil
 }
 
 type Formatter struct {
@@ -73,20 +73,20 @@ func NewFormatter(writer io.Writer, conv string) (*Formatter, error) {
 	return f, nil
 }
 
-func (out *Formatter) WriteChunk(s string) error {
+func (out *Formatter) WriteChunk(s []byte) error {
 	if out.low {
 		//strings.ToLower(s)
-		runes := []rune(s)
+		runes := []rune(string(s))
 		for i := range runes {
 			runes[i] = unicode.ToLower(runes[i])
 		}
-		s = string(runes)
+		s = []byte(string(runes))
 	} else if out.up {
-		runes := []rune(s)
+		runes := []rune(string(s))
 		for i := range runes {
 			runes[i] = unicode.ToUpper(runes[i])
 		}
-		s = string(runes)
+		s = []byte(string(runes))
 	}
 
 	//if out.trim && out.tbegin {
@@ -101,10 +101,10 @@ func (out *Formatter) WriteChunk(s string) error {
 	//}
 
 	if out.trim {
-		s = strings.TrimSpace(s)
+		s = []byte(strings.TrimSpace(string(s)))
 	}
 
-	_, err := io.WriteString(out.writer, s)
+	_, err := out.writer.Write(s)
 	if err != nil {
 		return fmt.Errorf("cannot write input file: %w", err)
 	}
