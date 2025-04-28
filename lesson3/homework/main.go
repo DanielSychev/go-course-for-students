@@ -48,6 +48,7 @@ type Formatter struct {
 	up     bool
 	low    bool
 	trim   bool
+	//s_begin, s_end string
 }
 
 func NewFormatter(writer io.Writer, conv string) (*Formatter, error) {
@@ -136,7 +137,7 @@ func main() {
 
 	var output *Formatter
 	if opts.To == "main.go" {
-		fmt.Fprintf(os.Stderr, fmt.Sprintf("cannot open main.go as output file"))
+		fmt.Fprintf(os.Stderr, "cannot open main.go as output file")
 		os.Exit(1)
 	}
 	if opts.To == "" {
