@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"golang.org/x/sync/semaphore"
 	"sync"
 	"sync/atomic"
 )
@@ -24,13 +25,16 @@ type DirSizer interface {
 type sizer struct {
 	// maxWorkersCount number of workers for asynchronous run
 	maxWorkersCount int
-	//sem             *semaphore.Weighted
+	sem             *semaphore.Weighted
 	// TODO: add other fields as you wish
 }
 
 // NewSizer returns new DirSizer instance
 func NewSizer() DirSizer {
-	return &sizer{}
+	return &sizer{
+		maxWorkersCount: 8,
+		sem:             semaphore.NewWeighted(8),
+	}
 }
 
 func (a *sizer) Size(ctx context.Context, d Dir) (Result, error) {
@@ -57,8 +61,12 @@ func (a *sizer) Size(ctx context.Context, d Dir) (Result, error) {
 	wg := new(sync.WaitGroup)
 
 	for _, dir := range dirs {
+		if err := a.sem.Acquire(ctx, 1); err != nil {
+			break // Выход при отмене контекста
+		}
 		wg.Add(1)
 		go func(dir Dir) {
+			defer a.sem.Release(1)
 			defer wg.Done()
 
 			select {
