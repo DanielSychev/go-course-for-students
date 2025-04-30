@@ -32,8 +32,8 @@ type sizer struct {
 // NewSizer returns new DirSizer instance
 func NewSizer() DirSizer {
 	return &sizer{
-		maxWorkersCount: 8,
-		sem:             semaphore.NewWeighted(8),
+		maxWorkersCount: 1000,
+		sem:             semaphore.NewWeighted(1000),
 	}
 }
 
