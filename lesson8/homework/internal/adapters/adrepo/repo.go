@@ -4,6 +4,7 @@ import (
 	"errors"
 	"homework8/internal/ads"
 	"homework8/internal/app"
+	"sync"
 )
 
 var ErrNotAuthor = errors.New("not author")
@@ -12,6 +13,7 @@ var ErrValidate = errors.New("validation error")
 type Repo struct {
 	index int64
 	a     []ads.Ad
+	mu    *sync.Mutex
 }
 
 func validate(Title string, Text string) bool {
@@ -19,6 +21,8 @@ func validate(Title string, Text string) bool {
 }
 
 func (r *Repo) Create(Title string, Text string, UserID int64) (*ads.Ad, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	if !validate(Title, Text) {
 		return nil, ErrValidate
 	}
@@ -34,6 +38,8 @@ func (r *Repo) Create(Title string, Text string, UserID int64) (*ads.Ad, error) 
 }
 
 func (r *Repo) UpdatePublished(ID int64, UserID int64, Published bool) (*ads.Ad, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	if r.a[ID].AuthorID != UserID {
 		return nil, ErrNotAuthor
 	}
@@ -42,6 +48,8 @@ func (r *Repo) UpdatePublished(ID int64, UserID int64, Published bool) (*ads.Ad,
 }
 
 func (r *Repo) UpdateTextAndTitle(ID int64, UserID int64, Title string, Text string) (*ads.Ad, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	if r.a[ID].AuthorID != UserID {
 		return nil, ErrNotAuthor
 	}
@@ -54,6 +62,8 @@ func (r *Repo) UpdateTextAndTitle(ID int64, UserID int64, Title string, Text str
 }
 
 func (r *Repo) GetList() ([]ads.Ad, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	var res = make([]ads.Ad, 0)
 	for _, elem := range r.a {
 		if elem.Published {
@@ -64,5 +74,5 @@ func (r *Repo) GetList() ([]ads.Ad, error) {
 }
 
 func New() app.Repository {
-	return &Repo{index: 0, a: []ads.Ad{}}
+	return &Repo{index: 0, a: []ads.Ad{}, mu: new(sync.Mutex)}
 }
