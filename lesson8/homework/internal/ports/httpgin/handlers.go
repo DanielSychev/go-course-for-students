@@ -1,13 +1,11 @@
 package httpgin
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"homework8/internal/adapters/adrepo"
 	"homework8/internal/app"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -19,8 +17,8 @@ func CreateHandle(c *gin.Context, a app.App) {
 		c.JSON(http.StatusBadRequest, AdErrorResponse(err))
 		return
 	}
-	jsonData, err := json.Marshal(adReq)
-	log.Println(string(jsonData))
+	//jsonData, err := json.Marshal(adReq)
+	//log.Println(string(jsonData))
 	adResp, err := a.CreateAd(c, adReq.Title, adReq.Text, adReq.UserID)
 
 	if err != nil {
@@ -50,8 +48,8 @@ func ChangeAdStatus(c *gin.Context, a app.App) {
 		c.JSON(http.StatusBadRequest, AdErrorResponse(err))
 		return
 	}
-	jsonData, err := json.Marshal(adReq)
-	log.Println(string(jsonData))
+	//jsonData, err := json.Marshal(adReq)
+	//log.Println(string(jsonData))
 	adResp, err := a.ChangeAdStatus(c, adId, adReq.UserID, adReq.Published)
 
 	if err != nil {
@@ -81,8 +79,8 @@ func UpdateAd(c *gin.Context, a app.App) {
 		c.JSON(http.StatusBadRequest, AdErrorResponse(err))
 		return
 	}
-	jsonData, err := json.Marshal(adReq)
-	log.Println(string(jsonData))
+	//jsonData, err := json.Marshal(adReq)
+	//log.Println(string(jsonData))
 	adResp, err := a.UpdateAd(c, adId, adReq.UserID, adReq.Title, adReq.Text)
 
 	if err != nil {
