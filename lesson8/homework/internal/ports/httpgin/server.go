@@ -17,7 +17,29 @@ func NewHTTPServer(port string, a app.App) Server {
 	gin.SetMode(gin.ReleaseMode)
 	s := Server{port: port, app: gin.New()}
 
-	// todo: add your own logic
+	// TODO: Add handlers and middlewares
+
+	s.app.POST("/api/v1/ads", func(c *gin.Context) {
+		CreateHandle(c, a)
+	})
+
+	s.app.PUT("/api/v1/ads/:id/status", func(c *gin.Context) {
+		ChangeAdStatus(c, a)
+	})
+
+	s.app.PUT("/api/v1/ads/:id", func(c *gin.Context) {
+		UpdateAd(c, a)
+	})
+
+	s.app.GET("/api/v1/ads", func(c *gin.Context) {
+		GetList(c, a)
+	})
+
+	//s.app.GET("/", func(c *gin.Context) {
+	//	c.JSONP(http.StatusOK, gin.H{
+	//		"message": "hello world",
+	//	})
+	//})
 
 	return s
 }
