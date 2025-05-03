@@ -35,6 +35,10 @@ func NewHTTPServer(port string, a app.App) Server {
 		GetList(c, a)
 	})
 
+	s.app.GET("api/v1/ads/:id", func(c *gin.Context) {
+		GetAdById(c, a)
+	})
+
 	//s.app.GET("/", func(c *gin.Context) {
 	//	c.JSONP(http.StatusOK, gin.H{
 	//		"message": "hello world",

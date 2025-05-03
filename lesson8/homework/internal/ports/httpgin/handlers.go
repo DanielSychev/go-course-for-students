@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"homework8/internal/adapters/adrepo"
+	"homework8/internal/ads"
 	"homework8/internal/app"
 	"net/http"
 	"strconv"
@@ -97,7 +98,17 @@ func UpdateAd(c *gin.Context, a app.App) {
 }
 
 func GetList(c *gin.Context, a app.App) {
-	adResp, err := a.GetList(c)
+	var err error
+	filter := ads.AdFilter{}
+	if filter.Pub, err = strconv.ParseBool(c.Query("pub")); err != nil {
+		filter.Pub = true // default: Published = true
+	}
+	if filter.Auth, err = strconv.ParseInt(c.Query("auth"), 10, 64); err != nil {
+		filter.Auth = -1
+	}
+	filter.Title = c.Query("title")
+
+	adResp, err := a.GetList(c, filter)
 
 	if err != nil {
 		if errors.Is(err, adrepo.ErrNotAuthor) {
@@ -110,4 +121,25 @@ func GetList(c *gin.Context, a app.App) {
 		return
 	}
 	c.JSON(http.StatusOK, AdListSuccessResponse(adResp))
+}
+
+func GetAdById(c *gin.Context, a app.App) {
+	strId := c.Param("id")
+	adId, err := strconv.ParseInt(strId, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, AdErrorResponse(fmt.Errorf("id should be a number")))
+		return
+	}
+
+	adResp, err := a.GetByID(c, adId)
+
+	if err != nil {
+		if errors.Is(err, adrepo.ErrNotCreated) {
+			c.JSON(http.StatusBadRequest, AdErrorResponse(fmt.Errorf("ad with such id hasn't created yet")))
+		} else {
+			c.JSON(http.StatusInternalServerError, AdErrorResponse(err))
+		}
+		return
+	}
+	c.JSON(http.StatusOK, AdSuccessResponse(adResp))
 }

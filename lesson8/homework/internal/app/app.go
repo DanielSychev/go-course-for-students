@@ -9,14 +9,16 @@ type App interface {
 	CreateAd(c *gin.Context, Title string, Text string, UserID int64) (*ads.Ad, error)
 	ChangeAdStatus(c *gin.Context, ID int64, UserID int64, Published bool) (*ads.Ad, error)
 	UpdateAd(c *gin.Context, ID int64, UserID int64, Title string, Text string) (*ads.Ad, error)
-	GetList(c *gin.Context) ([]ads.Ad, error)
+	GetList(c *gin.Context, filter ads.AdFilter) ([]ads.Ad, error)
+	GetByID(c *gin.Context, ID int64) (*ads.Ad, error)
 }
 
 type Repository interface {
 	Create(Title string, Text string, UserID int64) (*ads.Ad, error)
 	UpdatePublished(ID int64, UserID int64, Published bool) (*ads.Ad, error)
 	UpdateTextAndTitle(ID int64, UserID int64, Title string, Text string) (*ads.Ad, error)
-	GetList() ([]ads.Ad, error)
+	GetList(filter ads.AdFilter) ([]ads.Ad, error)
+	GetByID(ID int64) (*ads.Ad, error)
 }
 
 type AppMethods struct {
@@ -47,8 +49,12 @@ func (apm *AppMethods) UpdateAd(c *gin.Context, ID int64, UserID int64, Title st
 	return ad, nil
 }
 
-func (apm *AppMethods) GetList(c *gin.Context) ([]ads.Ad, error) {
-	return apm.r.GetList()
+func (apm *AppMethods) GetList(c *gin.Context, filter ads.AdFilter) ([]ads.Ad, error) {
+	return apm.r.GetList(filter)
+}
+
+func (apm *AppMethods) GetByID(c *gin.Context, ID int64) (*ads.Ad, error) {
+	return apm.r.GetByID(ID)
 }
 
 func NewApp(repo Repository) App {
