@@ -41,7 +41,7 @@ func TestGRRPCCreateUser(t *testing.T) {
 	t.Cleanup(func() {
 		cancel()
 	})
-
+	//nolint:staticcheck
 	conn, err := grpc.DialContext(ctx, "", grpc.WithContextDialer(dialer), grpc.WithInsecure())
 	assert.NoError(t, err, "grpc.DialContext")
 
