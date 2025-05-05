@@ -29,7 +29,7 @@ func NewHTTPServer(port string, a app.App) *http.Server {
 
 	handler.Use(ServiceRecovery())
 	handler.POST("/api/v1/ads", func(c *gin.Context) {
-		CreateHandle(c, a)
+		CreateAd(c, a)
 	})
 
 	handler.PUT("/api/v1/ads/:id/status", func(c *gin.Context) {
@@ -41,12 +41,27 @@ func NewHTTPServer(port string, a app.App) *http.Server {
 	})
 
 	handler.GET("/api/v1/ads", func(c *gin.Context) {
-		GetList(c, a)
+		ListAds(c, a)
 	})
 
 	handler.GET("api/v1/ads/:id", func(c *gin.Context) {
-		GetAdById(c, a)
+		GetAd(c, a)
 	})
 
+	handler.DELETE("/api/v1/ads/:id/del", func(c *gin.Context) {
+		DeleteAd(c, a)
+	})
+
+	handler.POST("/api/v1/users", func(c *gin.Context) {
+		CreateUser(c, a)
+	})
+
+	handler.GET("/api/v1/users/:id", func(c *gin.Context) {
+		GetUser(c, a)
+	})
+
+	handler.DELETE("/api/v1/users/:id/del", func(c *gin.Context) {
+		DeleteUser(c, a)
+	})
 	return s
 }
