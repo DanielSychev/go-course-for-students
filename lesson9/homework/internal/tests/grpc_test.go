@@ -12,6 +12,7 @@ import (
 	"homework9/internal/adapters/adrepo"
 	"homework9/internal/app"
 	grpcPort "homework9/internal/ports/grpc"
+	ser "homework9/internal/ports/grpc/service"
 )
 
 func TestGRRPCCreateUser(t *testing.T) {
@@ -25,7 +26,7 @@ func TestGRRPCCreateUser(t *testing.T) {
 		srv.Stop()
 	})
 
-	svc := grpcPort.NewService(app.NewApp(adrepo.New()))
+	svc := ser.NewMyServer(app.NewApp(adrepo.New()))
 	grpcPort.RegisterAdServiceServer(srv, svc)
 
 	go func() {
@@ -40,7 +41,7 @@ func TestGRRPCCreateUser(t *testing.T) {
 	t.Cleanup(func() {
 		cancel()
 	})
-
+	//nolint:staticcheck
 	conn, err := grpc.DialContext(ctx, "", grpc.WithContextDialer(dialer), grpc.WithInsecure())
 	assert.NoError(t, err, "grpc.DialContext")
 
